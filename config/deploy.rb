@@ -21,12 +21,12 @@ namespace :deploy do
   %w[start stop restart].each do |command|
     desc "#{command} unicorn server"
     task command, roles: :app, except: {no_release: true} do
+      sudo "#{current_path}/config/nginx.conf.sh #{application}"
       run "#{current_path}/config/unicorn.sh #{command}"
     end
   end
 
   task :setup_config, roles: :app do
-    sudo "#{current_path}/config/nginx.conf.sh #{application}"
     run "mkdir -p #{shared_path}/config"
     put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
     puts "Now edit the config files in #{shared_path}."
